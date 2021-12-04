@@ -59,3 +59,38 @@ eksctl create cluster --name k8snovice --region ap-northeast-1 --fargate
 2021-12-04 08:30:07 [✔]  EKS cluster "k8snovice" in "ap-northeast-1" region is ready
 ```
 </details>
+
+```shell
+eksctl utils associate-iam-oidc-provider --region=ap-northeast-1 --cluster=k8snovice
+```
+```console
+2021-12-04 08:49:53 [ℹ]  eksctl version 0.76.0
+2021-12-04 08:49:53 [ℹ]  using region ap-northeast-1
+2021-12-04 08:49:53 [ℹ]  (plan) would create IAM Open ID Connect provider for cluster "k8snovice" in "ap-northeast-1"
+2021-12-04 08:49:53 [!]  no changes were applied, run again with '--approve' to apply the changes
+```
+```shell
+eksctl utils associate-iam-oidc-provider --region=ap-northeast-1 --cluster=k8snovice --approve
+```
+```console
+2021-12-04 08:50:12 [ℹ]  eksctl version 0.76.0
+2021-12-04 08:50:12 [ℹ]  using region ap-northeast-1
+2021-12-04 08:50:13 [ℹ]  will create IAM Open ID Connect provider for cluster "k8snovice" in "ap-northeast-1"
+2021-12-04 08:50:13 [✔]  created IAM Open ID Connect provider for cluster "k8snovice" in "ap-northeast-1"
+```
+
+```shell
+kubectl create ns demo
+
+CLUSTER_NAME=k8snovice
+CLUSTER_REGION=ap-northeast-1
+
+eksctl create iamserviceaccount \
+--cluster=$CLUSTER_NAME \
+--namespace=demo \
+--name=demo-sa \
+--attach-policy-arn=arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess \
+--override-existing-serviceaccounts \
+--region $CLUSTER_REGION \
+--approve
+```
