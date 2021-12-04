@@ -94,3 +94,39 @@ eksctl create iamserviceaccount \
 --region $CLUSTER_REGION \
 --approve
 ```
+```console
+2021-12-04 08:52:20 [ℹ]  eksctl version 0.76.0
+2021-12-04 08:52:20 [ℹ]  using region ap-northeast-1
+2021-12-04 08:52:21 [ℹ]  1 iamserviceaccount (demo/demo-sa) was included (based on the include/exclude rules)
+2021-12-04 08:52:21 [!]  metadata of serviceaccounts that exist in Kubernetes will be updated, as --override-existing-serviceaccounts was set
+2021-12-04 08:52:21 [ℹ]  1 task: {
+    2 sequential sub-tasks: {
+        create IAM role for serviceaccount "demo/demo-sa",
+        create serviceaccount "demo/demo-sa",
+    } }2021-12-04 08:52:21 [ℹ]  building iamserviceaccount stack "eksctl-k8snovice-addon-iamserviceaccount-demo-demo-sa"
+2021-12-04 08:52:21 [ℹ]  deploying stack "eksctl-k8snovice-addon-iamserviceaccount-demo-demo-sa"
+2021-12-04 08:52:21 [ℹ]  waiting for CloudFormation stack "eksctl-k8snovice-addon-iamserviceaccount-demo-demo-sa"
+2021-12-04 08:52:37 [ℹ]  waiting for CloudFormation stack "eksctl-k8snovice-addon-iamserviceaccount-demo-demo-sa"
+2021-12-04 08:52:54 [ℹ]  waiting for CloudFormation stack "eksctl-k8snovice-addon-iamserviceaccount-demo-demo-sa"
+2021-12-04 08:52:54 [ℹ]  created serviceaccount "demo/demo-sa"
+```
+
+```shell
+kubectl -n demo get sa demo-sa -o yaml
+```
+```yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::XXXXXXXXXXXX:role/eksctl-k8snovice-addon-iamserviceaccount-dem-Role1-I25W8IGOXPBL
+  creationTimestamp: "2021-12-04T08:52:54Z"
+  labels:
+    app.kubernetes.io/managed-by: eksctl
+  name: demo-sa
+  namespace: demo
+  resourceVersion: "6249"
+  uid: 7fea5c44-c3a5-4e4d-b801-1f5fcfd10bc3
+secrets:
+- name: demo-sa-token-pqxs9
+```
