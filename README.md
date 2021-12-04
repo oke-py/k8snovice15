@@ -8,6 +8,7 @@ eksctl create cluster --name k8snovice --region ap-northeast-1 --fargate
 ```
 
 <details><summary>output...</summary>
+
 ```console
 2021-12-04 08:07:13 [ℹ]  eksctl version 0.76.0
 2021-12-04 08:07:13 [ℹ]  using region ap-northeast-1
