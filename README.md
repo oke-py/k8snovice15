@@ -216,3 +216,12 @@ Unable to locate credentials. You can configure credentials by running "aws conf
 ```
 
 めでたしめでたし。
+
+利用しないリソースを削除する。
+
+- CloudFormationの`eksctl-k8snovice-addon-iamserviceaccount-demo-demo-sa`スタック
+- EKSクラスター
+
+```shell
+eksctl delete cluster --name $CLUSTER_NAME --region $CLUSTER_REGION
+```
