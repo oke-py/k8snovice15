@@ -4,7 +4,12 @@ Kubernetes Novice Tokyo #15 demo
 https://k8s-novice-jp.connpass.com/event/229951/
 
 ```shell
-eksctl create cluster --name k8snovice --region ap-northeast-1 --fargate
+CLUSTER_NAME=k8snovice
+CLUSTER_REGION=ap-northeast-1
+```
+
+```shell
+eksctl create cluster --name $CLUSTER_NAME --region $CLUSTER_REGION --fargate
 ```
 
 <details><summary>output...</summary>
@@ -61,7 +66,9 @@ eksctl create cluster --name k8snovice --region ap-northeast-1 --fargate
 </details>
 
 ```shell
-eksctl utils associate-iam-oidc-provider --region=ap-northeast-1 --cluster=k8snovice
+eksctl utils associate-iam-oidc-provider \
+  --region=$CLUSTER_REGION \
+  --cluster=$CLUSTER_NAME
 ```
 ```console
 2021-12-04 08:49:53 [ℹ]  eksctl version 0.76.0
@@ -70,7 +77,10 @@ eksctl utils associate-iam-oidc-provider --region=ap-northeast-1 --cluster=k8sno
 2021-12-04 08:49:53 [!]  no changes were applied, run again with '--approve' to apply the changes
 ```
 ```shell
-eksctl utils associate-iam-oidc-provider --region=ap-northeast-1 --cluster=k8snovice --approve
+eksctl utils associate-iam-oidc-provider \
+  --region=$CLUSTER_REGION \
+  --cluster=$CLUSTER_NAME \
+  --approve
 ```
 ```console
 2021-12-04 08:50:12 [ℹ]  eksctl version 0.76.0
@@ -80,19 +90,29 @@ eksctl utils associate-iam-oidc-provider --region=ap-northeast-1 --cluster=k8sno
 ```
 
 ```shell
+eksctl create fargateprofile \
+  --cluster $CLUSTER_NAME \
+  --name fp-demo \
+  --namespace demo
+```
+```console
+2021-12-04 09:35:28 [ℹ]  eksctl version 0.76.0
+2021-12-04 09:35:28 [ℹ]  using region ap-northeast-1
+2021-12-04 09:35:29 [ℹ]  creating Fargate profile "fp-demo" on EKS cluster "k8snovice"
+2021-12-04 09:37:39 [ℹ]  created Fargate profile "fp-demo" on EKS cluster "k8snovice"
+```
+
+```shell
 kubectl create ns demo
 
-CLUSTER_NAME=k8snovice
-CLUSTER_REGION=ap-northeast-1
-
 eksctl create iamserviceaccount \
---cluster=$CLUSTER_NAME \
---namespace=demo \
---name=demo-sa \
---attach-policy-arn=arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess \
---override-existing-serviceaccounts \
---region $CLUSTER_REGION \
---approve
+  --cluster=$CLUSTER_NAME \
+  --namespace=demo \
+  --name=demo-sa \
+  --attach-policy-arn=arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess \
+  --override-existing-serviceaccounts \
+  --region $CLUSTER_REGION \
+  --approve
 ```
 ```console
 2021-12-04 08:52:20 [ℹ]  eksctl version 0.76.0
@@ -129,4 +149,27 @@ metadata:
   uid: 7fea5c44-c3a5-4e4d-b801-1f5fcfd10bc3
 secrets:
 - name: demo-sa-token-pqxs9
+```
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    eks.amazonaws.com/fargate-profile: fp-demo
+  name: irsa
+  namespace: demo
+spec:
+  containers:
+  - args:
+    - s3
+    - ls
+    image: amazon/aws-cli
+    name: aws
+  restartPolicy: Never
+  tolerations:
+  - key: "eks.amazonaws.com/compute-type"
+    operator: "Equal"
+    value: "fargate"
+    effect: "NoSchedule"
 ```
