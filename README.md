@@ -66,9 +66,7 @@ eksctl create cluster --name $CLUSTER_NAME --region $CLUSTER_REGION --fargate
 </details>
 
 ```shell
-eksctl utils associate-iam-oidc-provider \
-  --region=$CLUSTER_REGION \
-  --cluster=$CLUSTER_NAME
+eksctl utils associate-iam-oidc-provider --cluster=$CLUSTER_NAME --region=$CLUSTER_REGION
 ```
 ```console
 2021-12-04 08:49:53 [ℹ]  eksctl version 0.76.0
@@ -77,10 +75,7 @@ eksctl utils associate-iam-oidc-provider \
 2021-12-04 08:49:53 [!]  no changes were applied, run again with '--approve' to apply the changes
 ```
 ```shell
-eksctl utils associate-iam-oidc-provider \
-  --region=$CLUSTER_REGION \
-  --cluster=$CLUSTER_NAME \
-  --approve
+eksctl utils associate-iam-oidc-provider --cluster=$CLUSTER_NAME --region=$CLUSTER_REGION --approve
 ```
 ```console
 2021-12-04 08:50:12 [ℹ]  eksctl version 0.76.0
@@ -90,10 +85,7 @@ eksctl utils associate-iam-oidc-provider \
 ```
 
 ```shell
-eksctl create fargateprofile \
-  --cluster $CLUSTER_NAME \
-  --name fp-demo \
-  --namespace demo
+eksctl create fargateprofile --cluster $CLUSTER_NAME --name fp-demo --namespace demo
 ```
 ```console
 2021-12-04 09:35:28 [ℹ]  eksctl version 0.76.0
@@ -167,6 +159,7 @@ spec:
     image: amazon/aws-cli
     name: aws
   restartPolicy: Never
+  serviceAccountName: demo-sa
   tolerations:
   - key: "eks.amazonaws.com/compute-type"
     operator: "Equal"
