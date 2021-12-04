@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    eks.amazonaws.com/fargate-profile: fp-demo
+  name: irsa
+  namespace: demo
+spec:
+  containers:
+  - args:
+    - s3
+    - ls
+    image: amazon/aws-cli
+    name: aws
+    resources:
+      requests:
+        cpu: "10m"
+        memory: "64Mi"
+      limits:
+        cpu: "10m"
+        memory: "64Mi"
+  restartPolicy: Never
+  serviceAccountName: demo-sa
+  tolerations:
+  - key: "eks.amazonaws.com/compute-type"
+    operator: "Equal"
+    value: "fargate"
+    effect: "NoSchedule"
